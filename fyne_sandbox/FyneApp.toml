@@ -1,0 +1,8 @@
+Website = "https://OpenNomad.JonVojtush.com"
+
+[Details]
+  Icon = "icon.png"
+  Name = "OpenNomad"
+  ID = "com.JonVojtush.OpenNomad"
+  Version = "1.0.0"
+  Build = 2
