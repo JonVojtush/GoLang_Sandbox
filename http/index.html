@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>DirectCMS</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="wasm_exec.js" defer></script>
+  <script src="bootstrap.bundle.min.js" defer></script>
+  <script src="scripts.js" defer></script>
+</head>
+
+<body class="container-fluid vh-100 position-relative" data-bs-theme="dark">
+    <p class="position-absolute top-50 start-50 translate-middle text-center">
+      Add two numbers, using WebAssembly:<br>
+      <br>
+      <input class="text-center" type="number" id="a" value="2"> + <input class="text-center" type="number" id="b" value="2"><br>
+      --------------------------------------<br>
+      <input class="text-center" type="number" id="result" readonly>
+    </p>
+</body>
+
+</html>
