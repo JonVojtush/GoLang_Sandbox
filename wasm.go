@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	window   = js.Global().Get("window")
 	document = js.Global().Get("document")
 	console  = js.Global().Get("console")
 )
