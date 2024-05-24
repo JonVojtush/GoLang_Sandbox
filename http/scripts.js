@@ -3,24 +3,29 @@
 let wasm;
 const go = new Go();
 
+function setEventListeners() {
+  // Update result when one of the 2 numbers are updated
+  document.querySelector('#a').oninput = wasm.exports.updateUI();
+  document.querySelector('#b').oninput = wasm.exports.updateUI();
+}
+
+function testLogs() {
+  console.log(goLog());
+  console.log(goLog("Arg1"));
+  console.log(varFromGoToJS);
+}
+
 function init(wasmObj) {
   wasm = wasmObj.instance;
   go.run(wasm);
 
-  console.log(goLog());
-  console.log(goLog("Arg1"));
-
-  //console.log(varFromGoToJS); // TASK: Set in main() or wasm.go
-
-  //Event Listeners
-  // Update result when one of the 2 numbers are updated
-  document.querySelector('#a').oninput = wasm.exports.updateUI(); // BUG: Not finding function
-  document.querySelector('#b').oninput = wasm.exports.updateUI();
+  testLogs();
+  setEventListeners();
 }
 
 if ('instantiateStreaming' in WebAssembly) {
   WebAssembly.instantiateStreaming(fetch("go.wasm"), go.importObject).then(wasmObj => {
-    console.log("instantiateStreaming = True");
+    //console.log("instantiateStreaming originally = True");
     init(wasmObj);
   })
 } else {
@@ -28,7 +33,7 @@ if ('instantiateStreaming' in WebAssembly) {
     resp.arrayBuffer()
   ).then(bytes =>
     WebAssembly.instantiate(bytes, go.importObject).then(wasmObj => {
-      console.log("instantiateStreaming = False");
+      //console.log("instantiateStreaming originally = False");
       init(wasmObj);
     })
   )
