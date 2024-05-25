@@ -1,40 +1,41 @@
 #!/bin/bash
+LOG_FILE="http/build.log"
+touch $LOG_FILE 2>&1 | tee /dev/stderr;
+
+echo "Script started at: $(date)" | tee -a $LOG_FILE;
 
 if [ -f http/go.wasm ]; then
-  rm -f http/go.wasm;
-  echo "http/go.wasm was removed; building a new file...";
+  echo "http/go.wasm exists, removing it..." | tee -a $LOG_FILE;
+  if ! rm -f http/go.wasm; then
+    echo "Failed to remove http/go.wasm" | tee -a $LOG_FILE >&2;
+    exit 1;
+  fi
 else
-  echo "http/go.wasm doesn't exist; Building one...";
+  echo "http/go.wasm doesn't exist." | tee -a $LOG_FILE;
 fi
 
-echo -en '\n'
-
-#tinygo build -o=http/go.wasm -target=wasm wasm.go;
-GOOS=js GOARCH=wasm go build -o=http/go.wasm -buildvcs=false
-echo "http/go.wasm was built.";
-
-echo -en '\n'
+echo "Building a new file..." | tee -a $LOG_FILE;
+# Check for error in building go.wasm and redirect stderr to log file
+GOOS=js GOARCH=wasm go build -o=http/go.wasm -buildvcs=false 2>&1 | tee -a $LOG_FILE >&2;
+echo "http/go.wasm was built." | tee -a $LOG_FILE;
 
 if [ -f http/wasm_exec.js ]; then
-  rm -f http/wasm_exec.js;
-  echo "http/wasm_exec.js was removed; fetching a new file...";
+  echo "http/wasm_exec.js exists, removing it..." | tee -a $LOG_FILE;
+  if ! rm -f http/wasm_exec.js; then
+    echo "Failed to remove http/wasm_exec.js" | tee -a $LOG_FILE >&2;
+    exit 1;
+  fi
 else
-  echo "http/wasm_exec.js doesn't exist; Fetching one...";
+  echo "http/wasm_exec.js doesn't exist." | tee -a $LOG_FILE;
 fi
 
-echo -en '\n'
+echo "Fetching a new file..." | tee -a $LOG_FILE;
+# Check for error in copying wasm_exec.js and redirect stderr to log file
+cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" http/ 2>&1 | tee -a $LOG_FILE >&2; 
+echo "http/wasm_exec.js was fetched from \$GOROOT/misc/wasm/" | tee -a $LOG_FILE;
+ 
+echo "Script ended at: $(date)" | tee -a $LOG_FILE;
 
-#cp "$(tinygo env TINYGOROOT)/targets/wasm_exec.js" http/; #wasm_exec.js:303 syscall/js.finalizeRef not implemented
-#echo "http/wasm_exec.js was fetched from tinygo.";
-cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" http/; 
-echo "http/wasm_exec.js was fetched from wasm.";
-
-echo -en '\n'
-
-#if error
-  #remain open until closed manually
-#else
-  echo "Finished, this will close automatically."
-  sleep 5
-  exit
-#fi
+# TinyGo (wasm_exec.js:303 syscall/js.finalizeRef not implemented)
+  # tinygo build -o=http/go.wasm -target=wasm wasm.go;
+  # cp "$(tinygo env TINYGOROOT)/targets/wasm_exec.js" http/;

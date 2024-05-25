@@ -2,39 +2,34 @@
 
 let wasm;
 const go = new Go();
+// Create an empty object to hold all of the WebAssembly exports
+const wasmExports = {};
 
-function setEventListeners() {
+function eventListeners() {
   // Update result when one of the 2 numbers are updated
-  document.querySelector('#a').oninput = wasm.exports.updateUI();
-  document.querySelector('#b').oninput = wasm.exports.updateUI();
+  document.querySelector('#a').oninput = wasmExports.updateUI;
+  document.querySelector('#b').oninput = wasmExports.updateUI;
 }
 
-function testLogs() {
-  console.log(goLog());
-  console.log(goLog("Arg1"));
-  console.log(varFromGoToJS);
-}
+function main(wasmObj) {
+  // Store all exports into an object
+  Object.assign(wasmExports, wasmObj.instance.exports);
 
-function init(wasmObj) {
   wasm = wasmObj.instance;
   go.run(wasm);
 
-  testLogs();
-  setEventListeners();
+  eventListeners();
+  console.log(varFromGoToJS);
 }
 
+// Go --> WASM
 if ('instantiateStreaming' in WebAssembly) {
-  WebAssembly.instantiateStreaming(fetch("go.wasm"), go.importObject).then(wasmObj => {
-    //console.log("instantiateStreaming originally = True");
-    init(wasmObj);
-  })
+  WebAssembly.instantiateStreaming(fetch("go.wasm"), go.importObject).then(wasmObj => main(wasmObj));
 } else {
-  fetch("go.wasm").then(resp =>
-    resp.arrayBuffer()
-  ).then(bytes =>
-    WebAssembly.instantiate(bytes, go.importObject).then(wasmObj => {
-      //console.log("instantiateStreaming originally = False");
-      init(wasmObj);
-    })
-  )
+  fetch("go.wasm").then(resp => resp.arrayBuffer()).then(bytes => WebAssembly.instantiate(bytes, go.importObject)).then(wasmObj => main(wasmObj));
 }
+
+
+
+
+
