@@ -1,0 +1,12 @@
+package main
+
+import "net/http"
+
+func startHttpServer() {
+	const serverRoot = "web/"
+	fs := http.FileServer(http.Dir(serverRoot))
+	err = http.ListenAndServe(":3380", fs)
+	if err != nil {
+		panic(err) // panic if there is an error starting the server
+	}
+}

@@ -1,18 +1,11 @@
-# Binaries for programs and plugins
+# Binaries & logs
 *.exe
 *.exe~
 *.bin
 *.bin~
-
-# Test binary, built with `go test -c`
-*.test
-
-# Workspace
-.vscode/
-*.work
+*.wasm
+*.log
 
 # Dependencies
 vendor/
-
-# Built resources
-http/main.wasm
+web/wasm_exec.js
