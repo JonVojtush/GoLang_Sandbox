@@ -3,7 +3,7 @@
 let wasm;
 const go = new Go();
 
-function eventListeners() {
+function setEventListeners() {
   // Update result when one of the 2 numbers are updated
   document.querySelector('#a').oninput = updateUI;
   document.querySelector('#b').oninput = updateUI;
@@ -11,7 +11,7 @@ function eventListeners() {
 
 function init(wasmObj) {
   go.run(wasmObj.instance);
-  eventListeners();
+  setEventListeners();
   updateUI(); // Set first result
   console.log(varFromGoToJS);
 }
