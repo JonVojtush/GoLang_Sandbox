@@ -11,13 +11,6 @@ var (
 	err error
 )
 
-/*func startHttpServer() {
-	server := http.FileServer(http.Dir("web/"))
-	if err = http.ListenAndServe(":3380", server); err != nil {
-		panic(err) // panic if there is an error starting the server
-	}
-}*/
-
 func updateUI(this js.Value, args []js.Value) interface{} {
 	var (
 		aStr string
@@ -44,7 +37,6 @@ func updateUI(this js.Value, args []js.Value) interface{} {
 }
 
 func main() {
-	// go startHttpServer() // run the HTTP server in a goroutine so it doesn't block the execution of other JavaScript code
 	js.Global().Set("varFromGoToJS", "Hello, I am a variable set from Go, but called from JS.")
 	js.Global().Set("updateUI", js.FuncOf(updateUI))
 	select {} // a `select` statement at the end of the `main()` function. This is necessary to prevent the Go program from exiting, as the WebAssembly binary will be terminated when the Go program exits.

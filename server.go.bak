@@ -1,0 +1,23 @@
+// go startHttpServer() // run the HTTP server in a goroutine so it doesn't block the execution of other JavaScript code
+
+package main
+
+import "net/http"
+
+func wasmHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/wasm")
+	http.ServeFile(w, r, "web/go.wasm")
+}
+
+func startHttpServer() {
+	fs := http.FileServer(http.Dir("web/"))
+	http.Handle("/", fs)
+
+	// Add route for .wasm files
+	http.HandleFunc("web/go.wasm", wasmHandler)
+
+	println("Starting server at port 3380")
+	if err = http.ListenAndServe(":3380", nil); err != nil {
+		panic(err)
+	}
+}
