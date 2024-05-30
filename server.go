@@ -1,25 +1,45 @@
-// go startHttpServer() // run the HTTP server in a goroutine so it doesn't block the execution of other JavaScript code
-
 package main
 
-import "net/http"
+// Recommend run with... go functionName() ...to start the HTTP server in a goroutine so it doesn't block the execution of other JavaScript code
 
-var err error
+import (
+	"flag"
+	"fmt"
+	"log"
+	"net/http"
+	"path/filepath"
+	"strconv"
+	"strings"
+)
 
-func wasmHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/wasm")
-	http.ServeFile(w, r, "web/go.wasm")
+var (
+	root = flag.String("root", "web/", "Root of the server.")
+	port = flag.Int("port", 3380, "Port to serve app over.")
+)
+
+type wasmHandler struct {
+	fs http.Handler
 }
 
-func startHttpServer() {
-	fs := http.FileServer(http.Dir("web/"))
-	http.Handle("/", fs)
-
-	// Add route for .wasm files
-	// http.HandleFunc("web/go.wasm", wasmHandler)
-
-	println("Starting server at port 3380")
-	if err = http.ListenAndServe(":3380", nil); err != nil {
-		panic(err)
+func (h *wasmHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if strings.HasSuffix(r.URL.Path, ".wasm") {
+		w.Header().Set("content-type", "application/wasm")
 	}
+	h.fs.ServeHTTP(w, r)
+}
+
+func main() {
+	flag.Parse()
+	if *root == "" || !filepath.IsAbs(*root) {
+		log.Fatalln("Root must be an absolute path with non-empty value")
+	}
+	if *port < 0 || *port > 65535 {
+		log.Fatalf("Port must be in the range 0 - 65535, got: %d", *port)
+	}
+	fs := http.FileServer(http.Dir(*root))
+	err := http.ListenAndServe(fmt.Sprintf(":%d", *port), &wasmHandler{fs})
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println("Serving files from "+*root, "on http://localhost:"+strconv.Itoa(*port))
 }
