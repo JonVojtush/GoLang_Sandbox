@@ -1,6 +1,4 @@
-package main
-
-// Recommend run with... go functionName() ...to start the HTTP server in a goroutine so it doesn't block the execution of other JavaScript code
+package server
 
 import (
 	"flag"
@@ -28,8 +26,9 @@ func (h *wasmHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.fs.ServeHTTP(w, r)
 }
 
-func main() {
-	flag.Parse()
+func startHttpServer() {
+	// Recommend to run with goroutine so it doesn't block the execution of other JavaScript code; go startHttpServer()
+	// flag.Parse()
 	if *root == "" || !filepath.IsAbs(*root) {
 		log.Fatalln("Root must be an absolute path with non-empty value")
 	}
