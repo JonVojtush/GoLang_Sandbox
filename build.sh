@@ -1,5 +1,5 @@
 #!/bin/bash
-LOG_FILE="web/build.log"
+LOG_FILE="web/build.log";
 touch $LOG_FILE 2>&1 | tee /dev/stderr;
 echo "Script started at: $(date)" | tee -a $LOG_FILE;
 
